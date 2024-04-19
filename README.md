@@ -20,22 +20,24 @@ $ make link
 It can easily take over the behavior of the compiler.
 
 ```
+$ export WRAPPER_CC=$(which gcc) WRAPPER_CXX=$(which g++)
+$ export WRAPPER_CLANG=$(which clang) WRAPPER_CLANGXX=$(which clang++)
 $ export PATH=$(pwd)/bin${PATH:+:${PATH}}
-$ for COM in wrapper-gcc wrapper-clang; do $COM test/a.c && ./a.out; done 
-$ for COM in wrapper-g++ wrapper-clang++; do $COM test/a.cpp && ./a.out; done 
+$ for COM in gcc clang; do $COM test/a.c && ./a.out; done
+$ for COM in g++ clang++; do $COM test/a.cpp && ./a.out; done 
 ```
 
 Without modifying `CMakeLists.txt`, it can hijack compiler options according to `WRAPPER_OPTI` and `WRAPPER_DEBUG`.
 
 ```
-$ export CC=$(pwd)/bin/wrapper-gcc
-$ export CXX=$(pwd)/bin/wrapper-g++
-$ export WRAPPER_OPTI=O3
-$ export WRAPPER_DEBUG=1
-$ pushd test/cmake
-$ cmake . && make
+$ export WRAPPER_CC=$(which gcc) WRAPPER_CXX=$(which g++)
+$ export WRAPPER_CLANG=$(which clang) WRAPPER_CLANGXX=$(which clang++)
+$ export PATH=$(pwd)/bin${PATH:+:${PATH}}
+$ export WRAPPER_OPTI=O3 WRAPPER_DEBUG=1
+$ pushd test/cmake/build
+$ cmake .. && make
 ...
-[DEBUG]: g++
+[DEBUG]: /usr/bin/g++
 [DEBUG]: -o
 [DEBUG]: CMakeFiles/a.out.dir/home/giles/Project/wrapper-gcc/test/a.cpp.o
 [DEBUG]: -c
@@ -44,3 +46,4 @@ $ cmake . && make
 [DEBUG]: -g
 ...
 ```
+tip: take care the order to export env.

@@ -5,5 +5,9 @@ bin/*
 
 test/cmake/*
 test/make/*
-!test/cmake/CMakeLists.txt
 !test/make/Makefile
+!test/cmake/CMakeLists.txt
+!test/cmake/build
+
+test/cmake/build/*
+!test/cmake/build/.gitkeep

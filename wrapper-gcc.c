@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define errExit(fmt, ...) do {  \
+  fprintf(stderr, fmt, ##__VA_ARGS__); \
+  exit(EXIT_FAILURE); \
+} while (0)
+
 typedef uint8_t  u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -30,27 +35,51 @@ static void edit_param(u32 argc, char** argv) {
   name = strrchr(argv[0], '/');
   if (!name) name = argv[0]; else name++;
   
-  if (!strcmp(name, "wrapper-clang++")) {
+  if (!strcmp(name, "clang++")) {
     u8* alt_cxx = getenv("WRAPPER_CLANGXX");
-    cc_params[0] = alt_cxx ? alt_cxx : (u8*)"clang++";
-  
-  } else if (!strcmp(name, "wrapper-clang")) {
+    if (!alt_cxx) {
+      errExit(
+        "Environment variable %s is not set\n", 
+        "WRAPPER_CLANGXX"
+      );
+    } else {
+      cc_params[0] = alt_cxx;
+    }
+  } else if (!strcmp(name, "clang")) {
     u8* alt_cc = getenv("WRAPPER_CLANG");
-    cc_params[0] = alt_cc ? alt_cc : (u8*)"clang";
-  
-  } else if (!strcmp(name, "wrapper-g++")) {
+    if (!alt_cc) {
+        errExit(
+        "Environment variable %s is not set\n", 
+        "WRAPPER_CLANG"
+      );
+    } else {
+      cc_params[0] = alt_cc;
+    }
+  } else if (!strcmp(name, "g++") || !strcmp(name, "c++")) {
     u8* alt_cxx = getenv("WRAPPER_CXX");
-    cc_params[0] = alt_cxx ? alt_cxx : (u8*)"g++";
-  
-  } else if (!strcmp(name, "wrapper-gcc")) {
+    if (!alt_cxx) {
+        errExit(
+        "Environment variable %s is not set\n", 
+        "WRAPPER_CXX"
+      );
+    } else {
+      cc_params[0] = alt_cxx;
+    }
+  } else if (!strcmp(name, "gcc") || !strcmp(name, "cc")) {
     u8* alt_cc = getenv("WRAPPER_CC");
-    cc_params[0] = alt_cc ? alt_cc : (u8*)"gcc";
-  
+    if (!alt_cc) {
+        errExit(
+        "Environment variable %s is not set\n", 
+        "WRAPPER_CC"
+      );
+    } else {
+      cc_params[0] = alt_cc;
+    }
   } else {
-    fprintf(stderr,
-      "Error call\n"
+    errExit(
+      "Error call %s from \n", 
+      name
     );
-    exit(-1);
   }
 
   #ifdef WRAPPER_DEBUG
@@ -146,16 +175,17 @@ static void edit_param(u32 argc, char** argv) {
 int main(int argc, char** argv) {
 
   if (argc < 2) {
-    fprintf(stderr, 
-      "This is the the wrapper binary of compiler 'gcc, g++, clang, clang++'.\n"
+    errExit( 
+      "This is the the wrapper of 'gcc, g++, clang, clang++'.\n"
       "It is used to modify the compilation options in a uniform way.\n"
-      "Changes are specified by environment variables 'WRAPPER_DEBUG, WRAPPER_OPTI'"
+      "Changes are specified by environment variables 'WRAPPER_DEBUG, WRAPPER_OPTI, WRAPPER_OTHER'"
       "\n"
     );
-    exit(1);
   }
   edit_param(argc, argv);
   execvp(cc_params[0], (char**)cc_params);
-  fprintf(stderr, "execvp Error\n.");
+  
+  errExit("Return from execvp.");
+  
   return 0;
 }
