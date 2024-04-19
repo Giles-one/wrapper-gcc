@@ -1,4 +1,9 @@
-wrapper-gcc
-wrapper-g++
-wrapper-clang
-wrapper-clang++
+a.out
+
+bin/*
+!bin/.gitkeep
+
+test/cmake/*
+test/make/*
+!test/cmake/CMakeLists.txt
+!test/make/Makefile

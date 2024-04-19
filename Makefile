@@ -6,17 +6,18 @@ CC = gcc
 CFLAGS_RELEASE = -O3
 CFLAGS_DEBUG = -g -DWRAPPER_DEBUG
 
-OTHER_COMPILER = wrapper-g++ wrapper-clang wrapper-clang++
+OUT = bin/wrapper-gcc
+OTHER_COMPILER = bin/wrapper-g++ bin/wrapper-clang bin/wrapper-clang++
 
 release: wrapper-gcc.c
-	${CC} ${CFLAGS_RELEASE} -o wrapper-gcc $<
-	strip wrapper-gcc
+	${CC} ${CFLAGS_RELEASE} -o ${OUT} $<
+	strip ${OUT}
 
 debug: wrapper-gcc.c
-	${CC} ${CFLAGS_DEBUG} -o wrapper-gcc $<
+	${CC} ${CFLAGS_DEBUG} -o ${OUT} $<
 
-link: wrapper-gcc
-	for LINK in ${OTHER_COMPILER}; do ln -s $< $$LINK; done
+link: ${OUT}
+	for LINK in ${OTHER_COMPILER}; do ln -s $$(basename $<) $$LINK; done
 
 clean:
 	rm wrapper-gcc ${OTHER_COMPILER}
