@@ -7,7 +7,7 @@ CFLAGS_RELEASE = -O3
 CFLAGS_DEBUG = -g -DWRAPPER_DEBUG
 
 OUT = bin/wrapper-gcc
-OTHER_COMPILER = bin/gcc bin/g++ bin/clang bin/clang++
+OTHER_COMPILER = bin/cc bin/c++ bin/gcc bin/g++ bin/clang bin/clang++
 
 release: wrapper-gcc.c
 	${CC} ${CFLAGS_RELEASE} -o ${OUT} $<
