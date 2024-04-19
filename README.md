@@ -1,6 +1,6 @@
 ## wrapper-gcc
 
-wrapper-gcc is a compiler wrapper similar to alf-gcc, which can uniformly modify compiler options without interfering with compilation scripts.
+wrapper-gcc is a compiler wrapper similar to alf-gcc, which can hijack compiler options without interfering with compilation scripts.
 
 
 
@@ -10,7 +10,7 @@ wrapper-gcc is a compiler wrapper similar to alf-gcc, which can uniformly modify
 $ make debug
 $ make link
 ```
--  `make debug` will print all the compiler options, while `make release` will not.
+-  `make debug` will print all the compiler options when compiling, while `make release` will not.
 - `make link` is used to create symbolic links.
 - `make clean` is used to remove compiled files.
 
