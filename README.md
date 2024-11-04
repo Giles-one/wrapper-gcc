@@ -2,48 +2,82 @@
 
 wrapper-gcc is a compiler wrapper similar to alf-gcc, which can hijack compiler options without interfering with compilation scripts.
 
-
-
 ## Usage
 
 ```
-$ make debug
+$ make
 $ make link
 ```
--  `make debug` will print all the compiler options when compiling, while `make release` will not.
-- `make link` is used to create symbolic links.
+
+- `make` will generate `bin/wrapper-gcc`, `sbin/bcsdcc`.
+- `make link` will create symbolic links `bin/cc -> ./wapper-gcc` .. `sbin/bcsdcc -> ../bin/wrapper-gc`.
 - `make clean` is used to remove compiled files.
 
+### step1
 
-### Test
-
-It can easily take over the behavior of the compiler.
-
-```
-$ export WRAPPER_CC=$(which gcc) WRAPPER_CXX=$(which g++)
-$ export WRAPPER_CLANG=$(which clang) WRAPPER_CLANGXX=$(which clang++)
-$ export PATH=$(pwd)/bin${PATH:+:${PATH}}
-$ for COM in gcc clang; do $COM test/a.c && ./a.out; done
-$ for COM in g++ clang++; do $COM test/a.cpp && ./a.out; done 
-```
-
-Without modifying `CMakeLists.txt`, it can hijack compiler options according to `WRAPPER_OPTI` and `WRAPPER_DEBUG`.
+make bcsdcc in your PATH environment.
 
 ```
-$ export WRAPPER_CC=$(which gcc) WRAPPER_CXX=$(which g++)
-$ export WRAPPER_CLANG=$(which clang) WRAPPER_CLANGXX=$(which clang++)
-$ export PATH=$(pwd)/bin${PATH:+:${PATH}}
-$ export WRAPPER_OPTI=O3 WRAPPER_DEBUG=1
-$ pushd test/cmake/build
+$ export PATH=$(pwd)/sbin${PATH:+:${PATH}}
+```
+
+### step2
+
+specify if debug, which optimization, what to append. And compile your project.
+
+```
+$ cd test/cmake/build
+$ bcsdcc -g -o O0 -a '-DMACRO=0' -- bash
+# do anything you need to compile
 $ cmake .. && make
 ...
-[DEBUG]: /usr/bin/g++
+[DEBUG]: c++
+[DEBUG]: -DNDEBUG
+[DEBUG]: -MD
+[DEBUG]: -MT
+[DEBUG]: CMakeFiles/a.out.dir/data/lgy/Projects/wrapper-gcc/test/a.cpp.o
+[DEBUG]: -MF
+[DEBUG]: CMakeFiles/a.out.dir/data/lgy/Projects/wrapper-gcc/test/a.cpp.o.d
 [DEBUG]: -o
-[DEBUG]: CMakeFiles/a.out.dir/home/giles/Project/wrapper-gcc/test/a.cpp.o
+[DEBUG]: CMakeFiles/a.out.dir/data/lgy/Projects/wrapper-gcc/test/a.cpp.o
 [DEBUG]: -c
-[DEBUG]: /home/giles/Project/wrapper-gcc/test/a.cpp
-[DEBUG]: -O3
+[DEBUG]: /data/lgy/Projects/wrapper-gcc/test/a.cpp
 [DEBUG]: -g
+[DEBUG]: -O0
+[DEBUG]: -DMACRO=0
 ...
 ```
-tip: take care the order to export env.
+
+see? Without modifying `CMakeLists.txt`, it can hijack compiler options according to the options of bcsdcc.
+
+### step3
+
+When done, don't forget to exit current shell.
+```
+$ exit
+```
+
+### another example
+
+```
+$ cd test/make
+$ make
+gcc -o a.out -s -Os ../a.c
+$ rm a.out 
+$ bcsdcc -g -o O0 --append '-D MACRO' -- make
+Debug mode enabled.
+Optimization level set to: O0
+Append `-D MACRO` to compile options.
+gcc -o a.out -s -Os ../a.c
+[DEBUG]: Hijack compiler ** gcc **
+[DEBUG]: cmd argv
+[DEBUG]: gcc
+[DEBUG]: -o
+[DEBUG]: a.out
+[DEBUG]: -O0
+[DEBUG]: ../a.c
+[DEBUG]: -g
+[DEBUG]: -D MACRO
+$ strings ./a.out | grep GNU
+GNU C17 11.4.0 -mtune=generic -march=x86-64 -g -O0 -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection
+```
