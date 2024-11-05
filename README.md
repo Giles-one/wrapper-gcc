@@ -27,11 +27,13 @@ specify if debug, which optimization, what to append. And compile your project.
 
 ```
 $ cd test/cmake/build
-$ bcsdcc -g -o O0 -a '-DMACRO=0' -- bash
+$ bcsdcc -g -o O0 -a '-DMACRO=0 -DHELLO=1' -- bash
 # do anything you need to compile
 $ cmake .. && make
 ...
+[DEBUG]: cmd argv
 [DEBUG]: c++
+[DEBUG]: -O0
 [DEBUG]: -DNDEBUG
 [DEBUG]: -MD
 [DEBUG]: -MT
@@ -43,8 +45,8 @@ $ cmake .. && make
 [DEBUG]: -c
 [DEBUG]: /data/lgy/Projects/wrapper-gcc/test/a.cpp
 [DEBUG]: -g
-[DEBUG]: -O0
 [DEBUG]: -DMACRO=0
+[DEBUG]: -DHELLO=1
 ...
 ```
 
@@ -69,7 +71,7 @@ Debug mode enabled.
 Optimization level set to: O0
 Append `-D MACRO` to compile options.
 gcc -o a.out -s -Os ../a.c
-[DEBUG]: Hijack compiler ** gcc **
+[DEBUG]: Hijack compiler ** gcc ** 
 [DEBUG]: cmd argv
 [DEBUG]: gcc
 [DEBUG]: -o
@@ -77,7 +79,8 @@ gcc -o a.out -s -Os ../a.c
 [DEBUG]: -O0
 [DEBUG]: ../a.c
 [DEBUG]: -g
-[DEBUG]: -D MACRO
+[DEBUG]: -D
+[DEBUG]: MACRO
 $ strings ./a.out | grep GNU
 GNU C17 11.4.0 -mtune=generic -march=x86-64 -g -O0 -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection -fcf-protection
 ```

@@ -111,8 +111,16 @@ static void edit_param(u32 argc, char** argv) {
     cc_params[cc_par_cnt++] = OPTI_FLAG;
 
   APPEND_FLAG = getenv(WRAPPER_APPEND);
-  if (APPEND_FLAG)
-    cc_params[cc_par_cnt++] = APPEND_FLAG;
+  if (APPEND_FLAG) {
+    char *token;
+    const char *delim = " ";
+    token = strtok(APPEND_FLAG, delim);
+    while (token != NULL) {
+      cc_params[cc_par_cnt++] = token;
+      token = strtok(NULL, delim);
+    }
+    
+  }
 
   cc_params[cc_par_cnt++] = 0;
 
